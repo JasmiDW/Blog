@@ -1,0 +1,38 @@
+{%  extends 'blog.html.twig' %}
+{% block h1 %}
+    <h1>Liste des articles</h1>
+{% endblock %}
+{% block content_blog %}
+    <div class="row">
+        {% for message in app.flashes('success') %}
+            <div class="alert alert-warning">
+                {{ message }}
+            </div>
+        {% endfor %}
+        <div class = "row">
+            {% for article in articles %}
+                <div class=" mb-3 mb-sm-0 mt-3 col-md-4">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title">{{ article.title }}</h5>
+                            <h6 class="card-title">{{ article.createdAt|date('d/m/y') }}</h6>
+                            <p class="card-text">{{ article.content }}</p>
+                            <p class="card-text">{{ article.comment.message }}</p>
+                            <a class="btn btn-dark" href="{{ path("blog_view_article", {'id': article.id}) }}">Lien de l'article</a>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+    <div class="col-6 mt-5">
+        {% for i in 1..totalPages %}
+            {% if i != page %}
+                <a href="{{ path( 'blog_show_list', {'page' : i} ) }}">{{ i }}</a>
+            {% elseif i == page %}
+                {{ i }}
+            {% endif %}
+        {% endfor %}
+    </div>
+{% endblock %}
+

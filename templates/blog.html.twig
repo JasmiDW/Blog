@@ -1,0 +1,25 @@
+{% extends 'base.html.twig' %}
+    {% block title %}
+        le {{ parent() }}
+    {% endblock %}
+
+    {% block h1 %}
+        <h1>Bienvenue sur le blog !</h1>
+    {% endblock %}
+
+    {% block menu %}
+        <li class="nav-item">
+            <a class="nav-link" href="{{ path("blog_add_article") }}">Ajouter un article</a>
+        </li>
+    {% endblock %}
+
+    {% block content %}
+        {% block content_blog %}
+        {% endblock %}
+    {% endblock %}
+
+    {% block h2 %}
+        <h2>C'est le blog de l'année !</h2>
+    {% endblock %}
+
+

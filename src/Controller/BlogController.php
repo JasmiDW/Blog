@@ -28,9 +28,7 @@ class BlogController extends AbstractController {
 
         $article = count($articles);
         $nbTotalPages = intval(ceil($article/$articlesPerPage));
-        //dump($articlesPerPage);
-        $comments = $articles->getComments();
-
+        //dump($articles);
         //$articles = $em->getRepository(Article::class)->findBy([],['createdAt'=>'DESC']);
         if($page > $nbTotalPages){
             throw $this->createNotFoundException("La page demandée n'existe pas");

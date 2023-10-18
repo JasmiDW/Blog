@@ -40,8 +40,8 @@ class ArticleRepository extends ServiceEntityRepository
     {
         $query = $this->createQueryBuilder('a')
             ->orderBy('a.createdAt', 'DESC')
-            //->leftJoin('a.comments', 'c')
-            //->addOrderBy('c.createdAt', 'DESC')
+            ->leftJoin('a.comments', 'c')
+            ->addOrderBy('c.createdAt', 'DESC')
             ->setFirstResult(($currentPage - 1) * $articlePerPage)
             ->setMaxResults($articlePerPage)
             ->getQuery();

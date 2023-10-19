@@ -4,6 +4,7 @@ namespace App\Controller;
 
 
 use App\Entity\Article;
+use App\Entity\Category;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
@@ -116,7 +117,24 @@ class BlogController extends AbstractController {
     }
 
     public function lastArticles($nbArticles, EntityManagerInterface $em) : Response {
+        $allCategories = $em->getRepository(Category::class)->findAll();
         $lastArticles = $em->getRepository(Article::class)->findLastArticle($nbArticles);
-        return $this->render('articles/lastArticles.html.twig', ['articles' => $lastArticles]);
+        return $this->render('articles/lastArticles.html.twig', ['articles' => $lastArticles, 'categories'=> $allCategories]);
+    }
+
+    #[Route('/category/{id}',
+        name: 'view_category',
+        requirements: ['id'=> '\d+'])]
+    public function categoryAction($id, EntityManagerInterface $em) : Response {
+        $articles = $em->getRepository(Article::class)
+            ->findByCategories($id);
+        //$articles = $em->getRepository(Article::class) ->findByCategory($category);
+        //Vérifie si l'article a été publié
+
+        if (($articles === null)) {
+            throw new NotFoundHttpException("La catégorie demandée n'existe pas.");
+        } else {
+            return $this->render('articles/viewCategory.html.twig', [ 'id'=> $id, 'articles' => $articles]);
+        }
     }
 }

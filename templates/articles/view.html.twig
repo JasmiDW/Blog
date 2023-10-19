@@ -8,8 +8,17 @@
         {% endfor %}
         <div class="card" >
             <div class="card-body">
-                <h4 class="card-title">{{ articles.title }}</h4>
-                <p class="card-text">{{ articles.content }}</p>
+                {%  for category in articles.categories %}
+                    <small class="text-body-secondary">{{ category.name }}
+                        {% if not loop.last %}
+                            -
+                        {% endif %}
+                    </small>
+                {% endfor %}
+                <hr>
+                <h5 class="card-title m-0">{{ articles.title }}</h5>
+
+                <p class="card-text mt-2">{{ articles.content }}</p>
                 <a href="{{ path( 'blog_edit_article', {'id' : articles.id} ) }}" class="btn btn-dark">Modifier</a>
                 <a href="{{ path( 'blog_delete_article', {'id' : articles.id} ) }}" class="btn btn-secondary">Supprimer</a>
             </div>

@@ -41,6 +41,9 @@ class ArticleRepository extends ServiceEntityRepository
         $query = $this->createQueryBuilder('a')
             ->orderBy('a.createdAt', 'DESC')
             ->leftJoin('a.comments', 'c')
+            //addSelect() pour ajouter des sélections supplémentaires à une requête Doctrine
+            ->addSelect('c')
+            ->leftJoin('a.categories', 'cat')
             ->addOrderBy('c.createdAt', 'DESC')
             ->setFirstResult(($currentPage - 1) * $articlePerPage)
             ->setMaxResults($articlePerPage)
@@ -48,6 +51,16 @@ class ArticleRepository extends ServiceEntityRepository
 
         //dump($query);
         return new Paginator($query);
+
+    }
+
+    public function findByCategories($categoryId) : array {
+        return $this->createQueryBuilder('a')
+            ->leftJoin('a.categories', 'cat')
+            ->addSelect('cat')
+            ->where('cat.id=:id')->setParameter('id',$categoryId)
+            ->getQuery()
+            ->getResult();
 
     }
 //    /**

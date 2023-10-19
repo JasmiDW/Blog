@@ -1,4 +1,14 @@
 {% block left_menu %}
+    <div class="card mb-5" style="width: 18rem;">
+        <div class="card-header">
+            Catégories
+        </div>
+        {%  for categorie in categories %}
+                <ul class="list-group list-group-flush">
+                    <li class="list-group-item" ><a  href="{{ path("blog_view_category", {'id': categorie.id}) }}">{{ categorie.name }}</a></li>
+                </ul>
+        {% endfor %}
+    </div>
    {%  for article in articles %}
        <div class="card mb-3" style="width: 18rem;">
            <div class="card-body">

@@ -3,3 +3,7 @@
     top: 0;
     bottom: 0;
 }
+
+.container a{
+    color: #1d2124;!important;
+}

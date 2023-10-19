@@ -5,8 +5,16 @@ namespace App\Controller;
 
 use App\Entity\Article;
 use App\Entity\Category;
+use App\Form\ArticleType;
+
 use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
+use Symfony\Component\Form\Extension\Core\Type\CollectionType;
+use Symfony\Component\Form\Extension\Core\Type\SubmitType;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Annotation\Route;
@@ -59,25 +67,43 @@ class BlogController extends AbstractController {
     // • Sinon : affichage du formulaire
     #[Route('/article/add',
         name: 'add_article')]
-    public function addAction(EntityManagerInterface $em) : Response {
+    public function addAction(EntityManagerInterface $em, Request $request) : Response {
 
-        if (false){ //form is submitted && valid
+        $article = new Article();
+        $article->setPublished(1);
+        $article->setCreatedAt(new \DateTime());
+        //$article->setUpdatedAt(null);
+        $article->setAuthor('Nadia');
+        $article->setNbViews(1);
+        $form = $this->createFormBuilder($article)
+            ->add('title', TextType::class)
+            ->add('content', TextType::class)
+            ->add('categories', EntityType::class,[
+                'class' => Category::class,
+                'choice_label' => 'name', // Remplacez 'name' par le champ approprié de votre entité Category
+                'multiple' => true, // Si vous autorisez plusieurs choix
+                'expanded' => false, // Si vous voulez que les choix soient affichés comme des cases à cocher
+            ])
+            ->add('save', SubmitType::class, ['label' => 'Ajouter'])
+            ->getForm();
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()){
+            if ($article->getContent() == $article->getTitle() || $article->getNbViews() < 0){
+                return $this->render('articles/add.html.twig',  array('form' => $form->createView()));
+            }
             //Traitement formulaire
+            $em->persist($article);
+            $em->flush();
 
             $message = "L'article a bien été ajouté";
             //Message succès
             $this->addFlash('success',$message);
-            return $this->redirectToRoute('blog_view_article', ['id'=>1, 'message'=> $message]);
+            return $this->redirectToRoute('blog_view_article', ['id'=>$article->getId(), 'message'=> $message]);
 
         } else {
-            $article = new Article();
-            $article->setTitle('Premier article')->setContent('Contenu du premier article')->setAuthor('Moi')
-                ->setPublished('True')->setCreatedAt(new \DateTime('2023/10/16'))->setNbViews(4)
-                ->setUpdatedAt(new \DateTime('2023/10/17'));
-            $em->persist($article);
-            $em->flush();
 
-            return $this->render('articles/add.html.twig');
+            return $this->render('articles/add.html.twig',  array('form' => $form->createView()));
         }
     }
 

@@ -43,7 +43,7 @@ class BlogController extends AbstractController {
     #[Route('/article/{id}',
         name: 'view_article',
         requirements: ['id'=> '\d+'])]
-    public function viewAction($id, EntityManagerInterface $em) : Response {
+    public function viewAction($id, EntityManagerInterface $em, TranslatorInterface $translator) : Response {
         $article = $em->getRepository(Article::class)
             ->find($id);
         //Vérifie si l'article a été publié
@@ -73,7 +73,7 @@ class BlogController extends AbstractController {
      */
     #[Route('/article/add',
         name: 'add_article')]
-    public function addAction(EntityManagerInterface $em, Request $request,  SpamFinder $spamFinder) : Response {
+    public function addAction(EntityManagerInterface $em, Request $request,  SpamFinder $spamFinder, TranslatorInterface $translator) : Response {
 
         $article = new Article();
         $article->setPublished(1);
@@ -97,7 +97,8 @@ class BlogController extends AbstractController {
             //Vérification des spams
             $content = $article->getContent();
             if ($spamFinder->isSpam($content)) {
-                $this->addFlash('error', 'Votre contenu est identifié comme spam. Veuillez supprimer tout contenu suspect.');
+                $translatedMessage = $translator->trans('Votre contenu est identifié comme spam. Veuillez supprimer tout contenu suspect.');
+                $this->addFlash('error', $translatedMessage);
                 return $this->redirectToRoute('blog_add_article');
             }
 
@@ -108,10 +109,11 @@ class BlogController extends AbstractController {
             $em->persist($article);
             $em->flush();
 
-            $message = "L'article a bien été ajouté";
+            $translatedMessageAdd = $translator->trans("L'article a bien été ajouté");
+
             //Message succès
-            $this->addFlash('success',$message);
-            return $this->redirectToRoute('blog_view_article', ['id'=>$article->getId(), 'message'=> $message]);
+            $this->addFlash('success',$translatedMessageAdd);
+            return $this->redirectToRoute('blog_view_article', ['id'=>$article->getId(), 'message'=> $translatedMessageAdd]);
 
         } else {
 
@@ -127,7 +129,7 @@ class BlogController extends AbstractController {
         requirements: ['id'=> '\d+'])
     ]
 
-    public function editAction($id, EntityManagerInterface $em, Request $request) : Response {
+    public function editAction($id, EntityManagerInterface $em, Request $request, TranslatorInterface $translator) : Response {
         $article = $em->getRepository(Article::class)
             ->find($id);
 
@@ -153,10 +155,11 @@ class BlogController extends AbstractController {
             $em->persist($article);
             $em->flush();
 
+            $translatedMessageEdit = $translator->trans("L'article a bien été modifié");
             //Message succès
-            $message = "L'article a bien été modifié";
-            $this->addFlash('success',$message);
-            return $this->redirectToRoute('blog_view_article', [ 'id'=> $id,'message'=> $message ]);
+
+            $this->addFlash('success',$translatedMessageEdit);
+            return $this->redirectToRoute('blog_view_article', [ 'id'=> $id,'message'=> $translatedMessageEdit ]);
         } else {
             return $this->render('articles/edit.html.twig', ['form' => $form->createView(), 'id' => $id]);
         }
@@ -168,7 +171,7 @@ class BlogController extends AbstractController {
     #[Route('/article/delete/{id}',
         name: 'delete_article',
         requirements: ['id'=> '\d+'])]
-    public function deleteAction($id, EntityManagerInterface $em) : Response {
+    public function deleteAction($id, EntityManagerInterface $em, TranslatorInterface $translator) : Response {
         $article = $em->getRepository(Article::class)
             ->find($id);
         if (isset($article)){ //id exists
@@ -176,10 +179,11 @@ class BlogController extends AbstractController {
             $em->remove($article);
             $em->flush();
             //Message succès
-            $this->addFlash('success',"L'article a bien été supprimé");
+            $translatedMessageDelete = $translator->trans("L'article a bien été supprimé");
+            $this->addFlash('success',"$translatedMessageDelete");
             return $this->redirectToRoute('blog_show_list');
         } else {
-            throw new NotFoundHttpException("L'article demandé ne peut pas être supprimé.");
+            throw $this->createNotFoundException($translator->trans("L'article demandé ne peut pas être supprimé."));
         }
     }
 
@@ -192,14 +196,13 @@ class BlogController extends AbstractController {
     #[Route('/category/{id}',
         name: 'view_category',
         requirements: ['id'=> '\d+'])]
-    public function categoryAction($id, EntityManagerInterface $em) : Response {
+    public function categoryAction($id, EntityManagerInterface $em, TranslatorInterface $translator) : Response {
         $articles = $em->getRepository(Article::class)
             ->findByCategories($id);
         //$articles = $em->getRepository(Article::class) ->findByCategory($category);
         //Vérifie si l'article a été publié
-
-        if (($articles === null)) {
-            throw new NotFoundHttpException("La catégorie demandée n'existe pas.");
+        if ($articles === null) {
+            throw $this->createNotFoundException($translator->trans("La catégorie demandée n'existe pas."));
         } else {
             return $this->render('articles/viewCategory.html.twig', [ 'id'=> $id, 'articles' => $articles]);
         }

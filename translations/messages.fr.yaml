@@ -2,6 +2,7 @@ Home: 'Accueil'
 About: 'A propos'
 Login: 'Connexion'
 Logout: 'Déconnexion'
+List of articles: 'Liste des articles'
 Add an article: 'Ajouter un article'
 Edit an article: 'Modification dun article'
 Content home: 'Contenu accueil'
@@ -15,3 +16,12 @@ from: 'par'
 Update: 'Modifier'
 Delete: 'Supprimer'
 The page doesn't exists: "La page n'existe pas"
+Password: 'Mot de passe'
+You are connected as: "Vous êtes connecté en tant que"
+Login page: 'Page de connexion'
+Your content is identified as spam. Please remove any suspicious content.: 'Votre contenu est identifié comme spam. Veuillez supprimer tout contenu suspect.'
+The article has been added: "L'article a bien été ajouté"
+The article has been updated: "L'article a bien été modifié"
+The article has been deleted: "L'article a bien été supprimé"
+The article requested cannot be deleted.: "L'article demandé ne peut pas être supprimé."
+The category requested does not exist.: "La catégorie demandée n'existe pas."

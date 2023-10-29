@@ -1,4 +1,11 @@
 {% block content_blog %}
     {{ form_start(form) }}
+    <div>
+        {{ form_label(form.title) }}    {# Affiche uniquement le label du champ #}
+        {{ form_errors(form.title) }}    {# Affiche les erreurs associées au champ s'il y en a #}
+        {{ form_widget(form.title) }}    {# Affiche le widget (code HTML du champ) #}
+    </div>
+    {{ form_row(form.content) }}
+    {{ form_row(form.categories) }}
     {{ form_end(form) }}
 {% endblock %}

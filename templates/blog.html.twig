@@ -4,12 +4,12 @@
     {% endblock %}
 
     {% block h1 %}
-        <h1>Bienvenue sur le blog !</h1>
+        <h1>{{ "Bienvenue sur le blog"|trans }}</h1>
     {% endblock %}
 
     {% block menu %}
         <li class="nav-item">
-            <a class="nav-link" href="{{ path("blog_add_article") }}">Ajouter un article</a>
+            <a class="nav-link" href="{{ path("blog_add_article") }}">{{ 'Ajouter un article'|trans }}</a>
         </li>
     {% endblock %}
 

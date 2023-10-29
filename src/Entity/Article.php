@@ -25,7 +25,7 @@ class Article
     #[ORM\Column(type: Types::TEXT)]
     #[Assert\NotBlank(message: 'article.validation.brandName.notBlank')]
     #[Assert\Length(max: 64)]
-    #[Assert\NotEqualTo('Title')]
+    #[Assert\NotEqualTo(propertyPath:"title", message: 'Ne doit pas être identique au titre')]
     private ?string $content = null;
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]

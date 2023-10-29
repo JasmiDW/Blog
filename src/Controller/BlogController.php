@@ -57,7 +57,7 @@ class BlogController extends AbstractController {
         $em->flush();
 
         if (($article === null) && ($published ==null) ) {
-            throw new NotFoundHttpException("L'article demandé n'existe pas.");
+            throw $this->createNotFoundException($translator->trans("La page demandée n'existe pas"));
         } else {
             return $this->render('articles/view.html.twig', [ 'id'=> $id, 'articles' => $article]);
         }

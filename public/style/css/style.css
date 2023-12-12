@@ -4,6 +4,22 @@
     bottom: 0;
 }
 
-.container a{
-    color: #1d2124;!important;
+.btn{
+    background-color: #721c24;
 }
+
+#navbarNav a{
+    color: #c8cbcf;
+}
+
+.card ul a{
+    color: #1d2124;
+    text-transform: uppercase;
+    font-weight: bold;
+    text-decoration: none;
+}
+.card ul a:hover {
+    color: #17a2b8;
+}
+
+

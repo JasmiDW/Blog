@@ -15,6 +15,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
 #[Route('/{_locale}/blog', name: 'blog_')]
@@ -68,11 +69,10 @@ class BlogController extends AbstractController {
     // ⇒ message flash de confirmation + redirection vers la liste
     // • Sinon : affichage du formulaire
 
-    /**
-     * @IsGranted("ROLE_ADMIN")
-     */
+
     #[Route('/article/add',
         name: 'add_article')]
+    #[IsGranted('ROLE_ADMIN')]
     public function addAction(EntityManagerInterface $em, Request $request,  SpamFinder $spamFinder, TranslatorInterface $translator) : Response {
 
         $article = new Article();
@@ -121,14 +121,12 @@ class BlogController extends AbstractController {
         }
     }
 
-    /**
-     * @IsGranted("ROLE_ADMIN")
-     */
+
     #[Route('/article/edit/{id}',
         name: 'edit_article',
         requirements: ['id'=> '\d+'])
     ]
-
+    #[IsGranted('ROLE_ADMIN')]
     public function editAction($id, EntityManagerInterface $em, Request $request, TranslatorInterface $translator) : Response {
         $article = $em->getRepository(Article::class)
             ->find($id);
@@ -165,12 +163,11 @@ class BlogController extends AbstractController {
         }
     }
 
-    /**
-     * @IsGranted("ROLE_ADMIN")
-     */
+
     #[Route('/article/delete/{id}',
         name: 'delete_article',
         requirements: ['id'=> '\d+'])]
+    #[IsGranted('ROLE_ADMIN')]
     public function deleteAction($id, EntityManagerInterface $em, TranslatorInterface $translator) : Response {
         $article = $em->getRepository(Article::class)
             ->find($id);

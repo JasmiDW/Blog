@@ -22,6 +22,7 @@ security:
                 path: app_logout
                 # where to redirect after logout
                 # target: app_any_route
+                target: app_login
 
             # activate different ways to authenticate
             # https://symfony.com/doc/current/security.html#the-firewall
@@ -29,9 +30,9 @@ security:
             # https://symfony.com/doc/current/security/impersonating_user.html
             # switch_user: true
     role_hierarchy:
-        ROLE_AUTHOR: ROLE_USER # Un utilisateur avec le rôle ROLE_AUTHOR aura à minima les droits d'un ROLE_USER
-        ROLE_ADMIN: ROLE_USER # idem pour un utilisateur ROLE_ADMIN
-        ROLE_OWNER: [ ROLE_ADMIN, ROLE_MANAGER, ROLE_ALLOWED_TO_SWITCH ] # un utilisateur ROLE_OWNER aura à minima les droits de 3 rôles
+        ROLE_USER: ['ROLE_USER'] # Un utilisateur avec le rôle ROLE_AUTHOR aura à minima les droits d'un ROLE_USER
+        ROLE_ADMIN: ['ROLE_ADMIN', 'ROLE_USER'] # idem pour un utilisateur ROLE_ADMIN
+        ROLE_OWNER: [ 'ROLE_ADMIN', 'ROLE_USER'] # un utilisateur ROLE_OWNER aura à minima les droits de 3 rôles
 
     # Easy way to control access for large sections of your site
     # Note: Only the *first* access control that matches will be used

@@ -44,6 +44,7 @@ class BlogController extends AbstractController {
     #[Route('/article/{id}',
         name: 'view_article',
         requirements: ['id'=> '\d+'])]
+
     public function viewAction($id, EntityManagerInterface $em, TranslatorInterface $translator) : Response {
         $article = $em->getRepository(Article::class)
             ->find($id);

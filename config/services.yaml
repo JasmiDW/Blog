@@ -24,6 +24,15 @@ services:
         tags:
             - { name: twig.extension }
 
+    App\Security\Voter\ArticleVoter:
+        arguments:
+            $logger: '@logger'
+        tags:
+            - { name: security.voter }
+
+    App\EventSubscriber\ArticleSubscriber:
+        tags:
+            - { name: doctrine.event_subscriber }
 
 
 

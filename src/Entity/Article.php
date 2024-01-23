@@ -43,6 +43,7 @@ class Article
     private ?\DateTimeInterface $updatedAt = null;
 
     #[ORM\Column(length: 128)]
+    #[ORM\ManyToOne(targetEntity: User::class, inversedBy: 'articles')]
 
     private ?string $author = null;
 

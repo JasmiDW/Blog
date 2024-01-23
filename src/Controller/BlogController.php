@@ -5,6 +5,7 @@ namespace App\Controller;
 
 use App\Entity\Article;
 use App\Entity\Category;
+use App\Services\EmailService;
 use App\Services\SpamFinder;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
@@ -19,9 +20,13 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
 #[Route('/{_locale}/blog', name: 'blog_')]
+
 class BlogController extends AbstractController {
 
+
+
     #[Route('/list/{page}', name: 'show_list', requirements: ['page' => '\d+'], defaults: ['page' => 1, "_locale" => "fr_FR"])]
+    #[IsGranted('ROLE_USER')]
     public function listAction($page, EntityManagerInterface $em, TranslatorInterface $translator): Response {
 
         if ($page < 1) {
@@ -40,14 +45,12 @@ class BlogController extends AbstractController {
         return $this->render('articles/list.html.twig', ['articles' => $articles, 'page'=>$page, 'totalPages'=>$nbTotalPages]);
     }
 
-
-    #[Route('/article/{id}',
-        name: 'view_article',
-        requirements: ['id'=> '\d+'])]
-
-    public function viewAction($id, EntityManagerInterface $em, TranslatorInterface $translator) : Response {
+    #[Route("/article/slug/{slug}", name: "view_article_slug")]
+    public function viewSlugAction(string $slug, EntityManagerInterface $em, TranslatorInterface $translator, EmailService $emailService): Response
+    {
         $article = $em->getRepository(Article::class)
-            ->find($id);
+            ->findOneBy(['slug' => $slug]);
+
         //Vérifie si l'article a été publié
         $published = $article->isPublished();
         $views = $article->getNbViews();
@@ -57,6 +60,48 @@ class BlogController extends AbstractController {
         $article->setNbViews($incrementViews);
         $em->persist($article);
         $em->flush();
+
+        if ($views % 10 == 0) {
+            $emailService->sendEmail(
+                'admin@monsite.com',
+                'Article vu ' . $views . ' fois',
+                'L\'article "' . $article->getTitle() . '" a été vu ' . $views . ' fois.'
+            );
+        }
+
+        if (($article === null) && ($published ==null) ) {
+            throw $this->createNotFoundException($translator->trans("La page demandée n'existe pas"));
+        } else {
+            return $this->render('articles/view.html.twig', [ 'slug'=> $slug, 'articles' => $article]);
+        }
+    }
+
+
+    #[Route('/article/{id}',
+        name: 'view_article',
+        requirements: ['id'=> '\d+'])]
+    #[IsGranted('ROLE_USER')]
+    public function viewAction($id, EntityManagerInterface $em, TranslatorInterface $translator, EmailService $emailService) : Response {
+        $article = $em->getRepository(Article::class)
+            ->find($id);
+
+        //Vérifie si l'article a été publié
+        $published = $article->isPublished();
+        $views = $article->getNbViews();
+
+        $incrementViews = ($views+1);
+
+        $article->setNbViews($incrementViews);
+        $em->persist($article);
+        $em->flush();
+
+        if ($views % 10 == 0) {
+            $emailService->sendEmail(
+                'admin@monsite.com',
+                'Article vu ' . $views . ' fois',
+                'L\'article "' . $article->getTitle() . '" a été vu ' . $views . ' fois.'
+            );
+        }
 
         if (($article === null) && ($published ==null) ) {
             throw $this->createNotFoundException($translator->trans("La page demandée n'existe pas"));
@@ -79,7 +124,9 @@ class BlogController extends AbstractController {
         $article = new Article();
         $article->setPublished(1);
         $article->setCreatedAt(new \DateTime());
-        $article->setAuthor('Nadia');
+
+
+       // $article->setAuthor($user);
         $article->setNbViews(1);
         $form = $this->createFormBuilder($article)
             ->add('title', TextType::class)

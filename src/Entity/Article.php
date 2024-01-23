@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use Gedmo\Mapping\Annotation as Gedmo;
 use Symfony\Component\Validator\Constraints as Assert;
 use App\Repository\ArticleRepository;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -10,8 +11,15 @@ use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: ArticleRepository::class)]
+#[ORM\HasLifecycleCallbacks]
 class Article
 {
+
+    #[ORM\Column(length: 128, unique: true, nullable: true)]
+    #[Gedmo\Slug(fields: ['title'])]
+    private ?string $slug = null;
+
+
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
@@ -35,6 +43,7 @@ class Article
     private ?\DateTimeInterface $updatedAt = null;
 
     #[ORM\Column(length: 128)]
+
     private ?string $author = null;
 
     #[ORM\Column]
@@ -74,6 +83,11 @@ class Article
         $this->title = $title;
 
         return $this;
+    }
+
+    public function getSlug(): ?string
+    {
+        return $this->slug;
     }
 
     public function getContent(): ?string
@@ -117,11 +131,20 @@ class Article
         return $this->author;
     }
 
-    public function setAuthor(string $author): static
+    public function setAuthor(string $author): self
     {
         $this->author = $author;
 
         return $this;
+    }
+
+    #[ORM\PrePersist]
+    public function setDefaultAuthor(): void
+    {
+        if ($this->author == null){
+            $this->author = 'Anonymous';
+        }
+
     }
 
     public function getNbViews(): ?int
@@ -201,5 +224,8 @@ class Article
 
         return $this;
     }
+
+
+
 
 }

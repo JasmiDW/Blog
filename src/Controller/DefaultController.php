@@ -8,12 +8,18 @@ use Symfony\Component\Routing\Annotation\Route;
 
 class DefaultController extends AbstractController {
 
-    #[Route('/{_locale}', name : 'home', requirements: ['_locale' => 'en|fr']) ]
+    #[Route('/{_locale}', name : 'home') ]
     public function homeAction() : Response {
         return $this->render('base.html.twig');
     }
 
-    #[Route ('/a-propos', name: 'a_propos')]
+    #[Route('', name : 'project') ]
+    public function projectAction() : Response {
+        return $this->render('base.html.twig');
+    }
+
+
+    #[Route ('/{_locale}/a-propos', name: 'a_propos')]
     public function aboutAction() : Response {
         return $this->render('about.html.twig');
     }

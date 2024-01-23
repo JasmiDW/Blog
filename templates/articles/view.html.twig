@@ -13,11 +13,11 @@
                         {% if not loop.last %}
                             -
                         {% endif %}
+                        <span class="card-text mt-2"> - {{ articles.author }}</span>
                     </small>
                 {% endfor %}
                 <hr>
                 <h5 class="card-title m-0">{{ articles.title }}</h5>
-
                 <p class="card-text mt-2">{{ articles.content }}</p>
                 {% if 'ROLE_ADMIN' in app.user.roles %}
                     <a href="{{ path( 'blog_edit_article', {'id' : articles.id} ) }}" class="btn btn-dark">{{ "Modifier"|trans }}</a>

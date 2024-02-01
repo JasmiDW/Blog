@@ -32,11 +32,11 @@
 
                             <li class="nav-item active">
                                 <span></span>
-                                <a class="nav-link" href="{{ path('app_logout', {'_locale' : app.request.locale }) }}">{{ 'Déconnexion'|trans }} {{ app.user.firstName }} {{ app.user.lastName }}</a>
+                                <a class="nav-link" href="{{ path('app_logout', {'_locale' : 'fr' }) }}">{{ 'Déconnexion'|trans }} {{ app.user.firstName }} {{ app.user.lastName }}</a>
                             </li>
                         {% else %}
                             <li class="nav-item active">
-                                <a class="nav-link" href="{{ path('app_login', {'_locale' : app.request.locale }) }}">{{ 'Connexion'|trans }}</a>
+                                <a class="nav-link" href="{{ path('app_login', {'_locale' : 'fr' }) }}">{{ 'Connexion'|trans }}</a>
                             </li>
                         {% endif %}
                         {% block menu %}

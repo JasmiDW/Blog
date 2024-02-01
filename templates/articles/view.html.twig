@@ -13,9 +13,13 @@
                         {% if not loop.last %}
                             -
                         {% endif %}
-                        <span class="card-text mt-2"> - {{ articles.author }}</span>
                     </small>
                 {% endfor %}
+                {% if articles.user is not null and articles.user.firstName is not null %}
+                    <small class="card-text mt-2"> - {{ articles.user.firstName }}  {{ articles.user.lastName }}</small>
+                {% else %}
+                    <small class="card-text mt-2"> - {{ articles.author }}</small>
+                {% endif %}
                 <hr>
                 <h5 class="card-title m-0">{{ articles.title }}</h5>
                 <p class="card-text mt-2">{{ articles.content }}</p>

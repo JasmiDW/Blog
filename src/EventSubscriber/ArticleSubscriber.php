@@ -3,33 +3,34 @@
 namespace App\EventSubscriber;
 
 use App\Entity\Article;
+use Doctrine\Common\EventSubscriber;
 use Doctrine\ORM\Events;
 use Doctrine\Persistence\Event\LifecycleEventArgs;
-use Symfony\Component\EventDispatcher\EventSubscriberInterface;
-use Symfony\Component\Security\Core\Security;
 
-class ArticleSubscriber implements EventSubscriberInterface
+class ArticleSubscriber implements EventSubscriber
 {
-private $security;
+    public function getSubscribedEvents(): array
+    {
+        return [
+            Events::prePersist,
+        ];
+    }
 
-public function __construct(Security $security)
-{
-$this->security = $security;
-}
+    public function prePersist(LifecycleEventArgs $args): void
+    {
+        $entity = $args->getObject();
 
-public function prePersist(LifecycleEventArgs $args): void
-{
-$entity = $args->getObject();
+        if (!$entity instanceof Article) {
+            return;
+        }
 
-if ($entity instanceof Article) {
-$entity->setAuthor($this->security->getUser()->getFirstName());
-}
-}
+        $this->updateAuthor($entity);
+    }
 
-public static function getSubscribedEvents(): array
-{
-return [
-Events::prePersist => 'prePersist',
-];
-}
+    private function updateAuthor(Article $article): void
+    {
+        if (empty($article->getAuthor()) && empty($article->getUser())) {
+            $article->setAuthor('anonymous');
+        }
+    }
 }

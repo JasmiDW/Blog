@@ -62,6 +62,10 @@ class Article
     #[ORM\JoinTable(name: 'asso_article_category')]
     private Collection $categories;
 
+
+    #[ORM\ManyToOne(targetEntity: User::class, inversedBy: 'articles')]
+    private ?User $user;
+
     public function __construct()
     {
         $this->createdAt = new \DateTime();
@@ -222,6 +226,21 @@ class Article
     public function removeCategory(Category $category): static
     {
         $this->categories->removeElement($category);
+
+        return $this;
+    }
+
+    public function getUser(): ?User
+    {
+        return $this->user;
+    }
+
+    /**
+     * @ORM\PrePersist
+     */
+    public function setUser($user)
+    {
+        $this->user = $user;
 
         return $this;
     }

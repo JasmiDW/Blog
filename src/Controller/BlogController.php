@@ -16,6 +16,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Security\Core\Security;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
@@ -126,7 +127,7 @@ class BlogController extends AbstractController {
         $article->setCreatedAt(new \DateTime());
 
 
-       // $article->setAuthor($user);
+        $article->setUser($this->getUser());
         $article->setNbViews(1);
         $form = $this->createFormBuilder($article)
             ->add('title', TextType::class)
@@ -175,6 +176,7 @@ class BlogController extends AbstractController {
         requirements: ['id'=> '\d+'])
     ]
     #[IsGranted('ROLE_ADMIN')]
+
     public function editAction($id, EntityManagerInterface $em, Request $request, TranslatorInterface $translator) : Response {
         $article = $em->getRepository(Article::class)
             ->find($id);

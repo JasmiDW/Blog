@@ -3,42 +3,62 @@
 namespace App\Security\Voter;
 
 use App\Entity\Article;
-use App\Entity\User;
-use Psr\Log\LoggerInterface;
-use Symfony\Component\Security\Core\Authorization\Voter\Voter;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
+use Symfony\Component\Security\Core\Authorization\Voter\Voter;
+use Symfony\Component\Security\Core\User\UserInterface;
 
 class ArticleVoter extends Voter
 {
-    private $logger;
+    const VIEW = 'view';
+    const EDIT = 'edit';
 
-    public function __construct(LoggerInterface $logger)
+    protected function supports($attribute, $subject): bool
     {
-        $this->logger = $logger;
+        if (!in_array($attribute, [self::VIEW, self::EDIT])) {
+            return false;
+        }
+
+        if (!$subject instanceof Article) {
+            return false;
+        }
+
+        return true;
     }
 
-    protected function supports(string $attribute, mixed $subject): bool
+    protected function voteOnAttribute($attribute, $subject, TokenInterface $token): bool
     {
-        $this->logger->info('Method supports was called.');
+        $user = $token->getUser();
+        if (!$user instanceof UserInterface) {
+            return false;
+        }
 
-        return $subject instanceof Article && in_array($attribute, ['edit', 'view']);
+        /** @var Article $article */
+        $article = $subject;
+
+        switch ($attribute) {
+            case self::VIEW:
+                return $this->canView($article, $user);
+            case self::EDIT:
+                return $this->canEdit($article, $user);
+        }
+
+        throw new \LogicException('This code should not be reached!');
     }
 
-    protected function voteOnAttribute(string $attribute, $article, TokenInterface $token): bool {
-        $this->logger->info('Method voteOnAttribute was called.');
-
-        //Seuls les articles publiés doivent pouvoir être consultés
-        if ('view' === $attribute && $article instanceof Article && $article->isPublished()) {
+    private function canView(Article $article, UserInterface $user)
+    {
+        // if they can edit, they can view
+        if ($this->canEdit($article, $user)) {
             return true;
         }
 
-        //Un article ne peut être édité que par celui qui l’a créé
-        $userId = $token->getUser()->getId();
-        $owner = $article->getUser();
+        // the Article object could have, for example, a method isPublished()
+        return $article->isPublished();
+    }
 
-        if('edit' === $attribute && ($owner instanceof User) && $userId === $owner->getId()) {
-            return true;
-        }
-        return false;
+    private function canEdit(Article $article, UserInterface $user)
+    {
+        // this assumes that the Article object has a `getUser()` method
+        return $user === $article->getUser();
     }
 }

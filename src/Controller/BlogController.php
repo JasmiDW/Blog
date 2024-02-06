@@ -16,7 +16,6 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Component\Security\Core\Security;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
@@ -134,9 +133,9 @@ class BlogController extends AbstractController {
             ->add('content', TextType::class)
             ->add('categories', EntityType::class,[
                 'class' => Category::class,
-                'choice_label' => 'name', // Remplacez 'name' par le champ approprié de votre entité Category
-                'multiple' => true, // Si vous autorisez plusieurs choix
-                'expanded' => true, // Si vous voulez que les choix soient affichés comme des cases à cocher
+                'choice_label' => 'name', // Choix du champ approprié de l'entité Category
+                'multiple' => true, // Si plusieurs choix
+                'expanded' => true, // Affiche les choix comme des cases à cocher
             ])
             ->add('save', SubmitType::class, ['label' => 'Ajouter'])
             ->getForm();
@@ -186,9 +185,9 @@ class BlogController extends AbstractController {
             ->add('content', TextType::class)
             ->add('categories', EntityType::class,[
                 'class' => Category::class,
-                'choice_label' => 'name', // Remplacez 'name' par le champ approprié de votre entité Category
-                'multiple' => true, // Si vous autorisez plusieurs choix
-                'expanded' => false, // Si vous voulez que les choix soient affichés comme des cases à cocher
+                'choice_label' => 'name', // Choix du champ approprié de l'entité Category
+                'multiple' => true, // Si plusieurs choix
+                'expanded' => false, // N'affiche pas les choix comme des cases à cocher
             ])
             ->add('save', SubmitType::class, ['label' => 'Modifier'])
             ->getForm();
@@ -221,7 +220,7 @@ class BlogController extends AbstractController {
     public function deleteAction($id, EntityManagerInterface $em, TranslatorInterface $translator) : Response {
         $article = $em->getRepository(Article::class)
             ->find($id);
-        if (isset($article)){ //id exists
+        if (isset($article)){
             //Traitement de la suppression
             $em->remove($article);
             $em->flush();

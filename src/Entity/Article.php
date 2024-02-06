@@ -63,6 +63,7 @@ class Article
     private Collection $categories;
 
 
+    //Ajout d'une colonne User pour garder les fixtures demandées lors du tp pour la colonne Author
     #[ORM\ManyToOne(targetEntity: User::class, inversedBy: 'articles')]
     private ?User $user;
 
@@ -197,7 +198,6 @@ class Article
     public function removeComment(Comment $comment): static
     {
         if ($this->comments->removeElement($comment)) {
-            // set the owning side to null (unless already changed)
             if ($comment->getArticle() === $this) {
                 $comment->setArticle(null);
             }
@@ -229,6 +229,8 @@ class Article
 
         return $this;
     }
+
+    //Ajout d'une colonne User pour garder les fixtures demandées lors du tp pour la colonne Author
 
     public function getUser(): ?User
     {
